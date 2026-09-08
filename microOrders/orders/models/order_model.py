@@ -8,12 +8,12 @@ class OrderModel(db.Model):
     user_name = db.Column(db.String(255), nullable=False)
     user_email = db.Column(db.String(255), nullable=False)
     total = db.Column(db.Numeric(10, 2), nullable=False)
-    status = db.Column(db.String(255), default='completada')
+    status = db.Column(db.String(255), default='Pendiente')
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     items = db.relationship('OrderItemModel', back_populates='order', cascade='all, delete-orphan')
 
 
-    def __init__(self, user_name, user_email, total, status='completada'):
+    def __init__(self, user_name, user_email, total, status='Pendiente'):
         self.user_name = user_name
         self.user_email = user_email
         self.total = total

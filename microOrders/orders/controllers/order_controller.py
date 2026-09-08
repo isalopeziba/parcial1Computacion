@@ -85,7 +85,10 @@ def discover_service(service_name):
     service = instances[0]['Service']
     return f"http://{service['Address']}:{service['Port']}"
 
-  
+
+
+
+# crear una orden
 @order_controller.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.get_json(silent=True)
@@ -96,6 +99,7 @@ def create_order():
     user_email = session.get('email')
     if not user_name or not user_email:
         return jsonify({'message': 'No hay sesión de usuario válida'}), 401
+
 
     products = data.get('products')
     if not isinstance(products, list) or not products:
@@ -115,7 +119,7 @@ def create_order():
             return jsonify({'message': 'Las cantidades deben ser mayores a cero'}), 400
         requested[product_id] = requested.get(product_id, 0) + quantity
 
-    # --- Descubrimiento dinámico vía Consul (sin URL hardcodeada) ---
+    # --- Descubrimiento dinámico vía Consul  ---
     try:
         products_base = discover_service('products')
     except (requests.RequestException, RuntimeError):
