@@ -18,8 +18,8 @@ app.register_blueprint(user_controller)
 def health_check():
     return '', 200
 
-os.environ['CONSUL_HOST'] = 'consul'
-os.environ['CONSUL_PORT'] = '8500'
+os.environ.setdefault('CONSUL_HOST', os.getenv('CONSUL_HOST', 'consul'))
+os.environ.setdefault('CONSUL_PORT', os.getenv('CONSUL_PORT', '8500'))
 
 consul = Consul(app=app)
 
