@@ -1,0 +1,124 @@
+services:
+  users_db:
+    image: mysql:8.0
+    env_file:
+      - ./microUsers/.env
+    volumes:
+      - users_db_data:/var/lib/mysql
+      - ./microUsers/init_Users.sql:/docker-entrypoint-initdb.d/init_Users.sql:ro
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  products_db:
+    image: mysql:8.0
+    env_file:
+      - ./microProducts/.env
+    volumes:
+      - products_db_data:/var/lib/mysql
+      - ./microProducts/init_Products.sql:/docker-entrypoint-initdb.d/init_Products.sql:ro
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  orders_db:
+    image: mysql:8.0
+    env_file:
+      - ./microOrders/.env
+    volumes:
+      - orders_db_data:/var/lib/mysql
+      - ./microOrders/init_Orders.sql:/docker-entrypoint-initdb.d/init_Orders.sql:ro
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  consul:
+    image: consul:1.15
+    ports:
+      - "8500:8500"
+    command: agent -dev -client=0.0.0.0
+    networks:
+      - backend
+
+  users:
+    build: ./microUsers
+    env_file:
+      - ./microUsers/.env
+    depends_on:
+      users_db:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    environment:
+      CONSUL_HTTP_ADDR: consul:8500
+    ports:
+      - "5002:5002"
+    networks:
+      - backend
+
+  products:
+    build: ./microProducts
+    env_file:
+      - ./microProducts/.env
+    depends_on:
+      products_db:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    environment:
+      CONSUL_HTTP_ADDR: consul:8500
+    ports:
+      - "5003:5003"
+    networks:
+      - backend
+
+  orders:
+    build: ./microOrders
+    env_file:
+      - ./microOrders/.env
+    depends_on:
+      orders_db:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    networks:
+      - backend
+    ports:
+      - "5004:5004"
+
+  frontend:
+    build: ./frontend
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - users
+      - products
+      - orders
+      - consul
+    environment:
+      CONSUL_HTTP_ADDR: consul:8500
+    ports:
+      - "5001:5001"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  users_db_data:
+  products_db_data:
+  orders_db_data:

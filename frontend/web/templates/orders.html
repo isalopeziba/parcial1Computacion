@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 50px;
+            padding-bottom: 20px;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .order-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        #order-message {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="/">Store Management</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    
+</nav>
+
+<div class="container order-container">
+    <h2>Create Order</h2>
+    <p class="text-muted">Select a product and its quantity, then add it to the order.</p>
+
+    <div id="order-message" class="alert" role="alert"></div>
+
+    <form id="add-order-item-form" class="form-row align-items-end">
+        <div class="form-group col-md-7">
+            <label for="product-id">Product</label>
+            <select class="form-control" id="product-id" required>
+                <option value="">Loading products...</option>
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="quantity">Quantity</label>
+            <input type="number" class="form-control" id="quantity" min="1" value="1" required>
+        </div>
+        <div class="form-group col-md-2">
+            <button type="submit" class="btn btn-secondary btn-block">Add</button>
+        </div>
+    </form>
+
+    <h3 class="mt-4">Current Order</h3>
+    <table id="order-items" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="text-right mb-4">
+        <strong>Total: $<span id="order-total">0.00</span></strong>
+        <button type="button" id="create-order-button" class="btn btn-primary ml-3">Create Order</button>
+    </div>
+
+    <h3>My Orders</h3>
+    <table id="orders-list" class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script src="static/scriptOrders.js"></script>
+</body>
+</html>
