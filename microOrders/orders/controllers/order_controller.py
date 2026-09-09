@@ -16,7 +16,7 @@ order_controller = Blueprint(
 @order_controller.route('/api/orders', methods=['GET']) 
 def get_all_orders(): 
 
-    #esto es lo que pde el profe de validacion de errores, manejo de errores si no hay incio valido
+    #esto es   validacion de errores, manejo de errores si no hay incio valido
     username = session.get('username')
     if not username:
         return jsonify({'message': 'NO hay un inicio de sesión valido'}), 401
@@ -49,12 +49,24 @@ def get_order(order_id):
     order = Order.query.get_or_404(order_id)
     if order.user_name != username:
         return jsonify({'message': 'Orden no encontrada'}), 404
-    
+
+    try:
+        products_base = discover_service('products')
+        products_response = requests.get(f'{products_base}/api/products', timeout=5)
+        products_response.raise_for_status()
+        product_names = {
+            product['id']: product['name']
+            for product in products_response.json()
+        }
+    except (requests.RequestException, KeyError, TypeError, ValueError, RuntimeError):
+        return jsonify({'message': 'No fue posible consultar los productos'}), 502
+
     items = OrderItem.query.filter_by(order_id=order.id).all()
     items_list = [
         {
             "id": item.id,
             "product_id": item.product_id,
+            "product_name": product_names.get(item.product_id, 'Producto no disponible'),
             "quantity": item.quantity,
             "unit_price": str(item.unitprice),
             "subtotal": str(item.subtotal)
@@ -119,7 +131,7 @@ def create_order():
             return jsonify({'message': 'Las cantidades deben ser mayores a cero'}), 400
         requested[product_id] = requested.get(product_id, 0) + quantity
 
-    # --- Descubrimiento dinámico vía Consul  ---
+    #  Descubrimiento dinámico vía Consul  
     try:
         products_base = discover_service('products')
     except (requests.RequestException, RuntimeError):
@@ -131,7 +143,7 @@ def create_order():
 
     try:
         for product_id, quantity in requested.items():
-            response = requests.get(f'{products_url}/{product_id}', timeout=5)
+            response = requests.get(f'{products_url}/{product_id}', timeout=5)  # se llama a productos gracias al consul
             if response.status_code == 404:
                 return jsonify({'message': f'Producto con ID {product_id} no existe'}), 404
             response.raise_for_status()

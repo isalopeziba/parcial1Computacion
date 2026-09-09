@@ -159,3 +159,42 @@ document.getElementById('add-order-item-form').addEventListener('submit', addOrd
 document.getElementById('create-order-button').addEventListener('click', createOrder);
 loadProducts();
 loadOrders();
+
+
+// para obtener lso items de una orden en especifico
+
+async function searchOrderById() {
+    const orderId = document.getElementById('search-order-id').value.trim();
+    const resultBox = document.getElementById('order-search-result');
+
+    if (!orderId || Number(orderId) < 1) {
+        showMessage('Ingresa un ID de orden válido.', 'warning');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${ORDERS_API}/${orderId}`, { credentials: 'include' });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Orden no encontrada');
+        }
+
+        const itemsText = data.items
+            .map(item => `Producto #${item.product_id} - ${item.product_name} x${item.quantity} ($${Number(item.subtotal).toFixed(2)})`)
+            .join('<br>');
+
+        resultBox.innerHTML = `
+            <strong>Orden #${data.id}</strong> — Total: $${Number(data.total).toFixed(2)} — Estado: ${data.status}<br>
+            ${itemsText}
+        `;
+        resultBox.className = 'mt-2 alert alert-info';
+        resultBox.style.display = 'block';
+    } catch (error) {
+        resultBox.className = 'mt-2 alert alert-danger';
+        resultBox.textContent = error.message;
+        resultBox.style.display = 'block';
+    }
+}
+
+document.getElementById('search-order-button').addEventListener('click', searchOrderById);
