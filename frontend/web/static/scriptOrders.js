@@ -1,5 +1,10 @@
-const PRODUCTS_API = 'http://192.168.100.3:5003/api/products';
-const ORDERS_API = 'http://192.168.100.3:5004/api/orders';
+const DIRECT = window.location.port === '5001';
+const PRODUCTS_API = DIRECT
+    ? `${window.location.protocol}//${window.location.hostname}:3002/api/products`
+    : `${window.location.origin}/api/products`;
+const ORDERS_API = DIRECT
+    ? `${window.location.protocol}//${window.location.hostname}:3003/api/orders`
+    : `${window.location.origin}/api/orders`;
 
 let products = [];
 let orderItems = [];

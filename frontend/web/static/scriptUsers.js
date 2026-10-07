@@ -1,5 +1,9 @@
+const USERS_API_BASE = window.location.port === '5001'
+    ? `${window.location.protocol}//${window.location.hostname}:3001`
+    : window.location.origin;
+
 function getUsers() {
-    fetch('http://192.168.100.3:5002/api/users')
+    fetch(`${USERS_API_BASE}/api/users`)
         .then(response => response.json())
         .then(data => {
             // Handle data
@@ -65,7 +69,7 @@ function createUser() {
         password: document.getElementById('password').value
     };
 
-    fetch('http://192.168.100.3:5002/api/users', {
+    fetch(`${USERS_API_BASE}/api/users`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -97,7 +101,7 @@ function updateUser() {
         password: document.getElementById('password').value
     };
 
-    fetch(`http://192.168.100.3:5002/api/users/${userId}`, {
+    fetch(`${USERS_API_BASE}/api/users/${userId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -126,7 +130,7 @@ function updateUser() {
 function deleteUser(userId) {
     console.log('Deleting user with ID:', userId);
     if (confirm('Are you sure you want to delete this user?')) {
-        fetch(`http://192.168.100.3:5002/api/users/${userId}`, {
+        fetch(`${USERS_API_BASE}/api/users/${userId}`, {
             method: 'DELETE',
         })
         .then(response => {

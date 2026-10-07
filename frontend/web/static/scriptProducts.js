@@ -1,5 +1,9 @@
+const PRODUCTS_API_BASE = window.location.port === '5001'
+    ? `${window.location.protocol}//${window.location.hostname}:3002`
+    : window.location.origin;
+
 function getProducts() {
-fetch('http://192.168.100.3:5003/api/products')
+fetch(`${PRODUCTS_API_BASE}/api/products`)
 
 .then(response => response.json())
 
@@ -89,7 +93,7 @@ var data = {
 
 };
 
-fetch('http://192.168.100.3:5003/api/products', {
+fetch(`${PRODUCTS_API_BASE}/api/products`, {
 
     method: 'POST',
 
@@ -144,7 +148,7 @@ var data = {
 
 };
 
-fetch(`http://192.168.100.3:5003/api/products/${productId}`, {
+fetch(`${PRODUCTS_API_BASE}/api/products/${productId}`, {
 
     method: 'PUT',
 
@@ -188,7 +192,7 @@ console.log('Deleting product with ID:', productId);
 
 if (confirm('Are you sure you want to delete this product?')) {
 
-    fetch(`http://192.168.100.3:5003/api/products/${productId}`, {
+    fetch(`${PRODUCTS_API_BASE}/api/products/${productId}`, {
 
         method: 'DELETE',
 

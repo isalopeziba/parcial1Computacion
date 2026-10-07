@@ -27,9 +27,9 @@ consul.register_service(
     name='users',
     interval='10s',
     tags=['microservice', 'users'],
-    port=5002,
-    httpcheck='http://users:5002/healthcheck'
+    port=3001,
+    httpcheck='http://users:3001/healthcheck'
 )
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002)
+    app.run(host='0.0.0.0', port=3001)

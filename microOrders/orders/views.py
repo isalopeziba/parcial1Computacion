@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_consulate import Consul
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["http://192.168.100.3:5001"])
+CORS(app, supports_credentials=True)
 app.config.from_object('config.Config')
 db.init_app(app)
 
@@ -28,9 +28,9 @@ consul.register_service(
     interval='10s',
     address='orders', 
     tags=['microservice', 'orders'],
-    port=5004,
-    httpcheck='http://orders:5004/healthcheck'
+    port=3003,
+    httpcheck='http://orders:3003/healthcheck'
 )
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004)
+    app.run(host='0.0.0.0', port=3003)
